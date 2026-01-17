@@ -1,20 +1,30 @@
-
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
 dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 const SYSTEM_PROMPT = `
 You are Sotou AI.
 You help non-technical users understand AI, business, and technology clearly.
 Be concise, accurate, practical, and empowering.
 `;
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.get("/", (req, res) => {
-res.send("Sotou AI Chat API is running");
-});
+
 if (!process.env.OPENAI_API_KEY) {
 throw new Error("OPENAI_API_KEY is not set");
 }
@@ -50,7 +60,11 @@ console.error(error);
 res.status(500).json({ error: "Server error" });
 }
 });
+const PORT = process.env.PORT || 3000;
 
+app.listen(PORT, () => {
+console.log(`🚀 Sotou AI Chat API running on port ${PORT}`);
+});
 export default app;
 
 
