@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sotou AI Chat</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background: #0f172a;
+color: #e5e7eb;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+}
+.chat-box {
+width: 420px;
+background: #020617;
+border-radius: 8px;
+padding: 16px;
+box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+h1 {
+text-align: center;
+font-size: 20px;
+margin-bottom: 12px;
+color: #38bdf8;
+}
+#messages {
+height: 240px;
+overflow-y: auto;
+border: 1px solid #1e293b;
+padding: 8px;
+margin-bottom: 10px;
+background: #020617;
+}
+.user {
+color: #facc15;
+margin-bottom: 6px;
+}
+.bot {
+color: #22c55e;
+margin-bottom: 10px;
+}
+input {
+width: 100%;
+padding: 8px;
+margin-bottom: 6px;
+border-radius: 4px;
+border: none;
+}
+button {
+width: 100%;
+padding: 8px;
+background: #38bdf8;
+border: none;
+color: black;
+font-weight: bold;
+cursor: pointer;
+border-radius: 4px;
+}
+</style>
+</head>
+<body>
+<div class="chat-box">
+<h1>Sotou AI Chat</h1>
+<div id="messages"></div>
+<input id="input" placeholder="Ask Sotou AI..." />
+<button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+async function sendMessage() {
+const input = document.getElementById("input");
+const messages = document.getElementById("messages");
+const text = input.value;
+if (!text) return;
+
+messages.innerHTML += `<div class="user">You: ${text}</div>`;
+input.value = "";
+
+const response = await fetch("/chat", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ message: text })
+});
+
+const data = await response.json();
+messages.innerHTML += `<div class="bot">Sotou AI: ${data.reply}</div>`;
+messages.scrollTop = messages.scrollHeight;
+}
+</script>
+</body>
+</html>
