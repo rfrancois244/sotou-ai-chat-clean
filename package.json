@@ -1,8 +1,33 @@
-
-"name": "sotou-ai-chat",
+{
+"name": "sotou-ai-chat-clean",
 "version": "1.0.0",
+"private": true,
 "type": "module",
+"scripts": {
+"build": "echo \"No build step\""
+},
 "dependencies": {
-"openai": "^4.16.0"
+"openai": "^4.0.0"
 }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
