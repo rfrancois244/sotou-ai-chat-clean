@@ -71,8 +71,42 @@ border-radius: 4px;
 </div>
 
 <script>
-const conversation = [];
-  async function sendMessage() {
+async function sendMessage() {
+const input = document.getElementById("input");
+const messages = document.getElementById("messages");
+const text = input.value.trim();
+
+if (!text) return;
+
+// Show user message
+messages.innerHTML += `<div class="user">You: ${text}</div>`;
+input.value = "";
+
+try {
+const response = await fetch("/api/chat", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({ message: text })
+});
+
+if (!response.ok) {
+const err = await response.text();
+messages.innerHTML += `<div class="ai">Error: ${err}</div>`;
+return;
+}
+
+const data = await response.json();
+
+messages.innerHTML += `<div class="ai">Sotou AI: ${data.reply}</div>`;
+messages.scrollTop = messages.scrollHeight;
+
+} catch (error) {
+messages.innerHTML += `<div class="ai">Network error: ${error.message}</div>`;
+}
+}
+</script>
 const input = document.getElementById("input");
 const messages = document.getElementById("messages");
 const text = input.value;
