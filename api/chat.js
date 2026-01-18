@@ -48,19 +48,28 @@ systemPrompt,
 { role: "user", content: message }
 ];
 
-const completion = await client.chat.completions.create({
+res.setHeader("Content-Type", "text/plain; charset=utf-8");
+res.setHeader("Transfer-Encoding", "chunked");
+
+const stream = await client.chat.completions.create({
 model: "gpt-4o-mini",
-messages
+messages: messages,
+stream: true,
 });
 
-const reply = completion.choices[0].message.content;
-
-return res.status(200).json({ reply });
-
-} catch (error) {
-console.error("Sotou AI API Error:", error);
-return res.status(500).json({ error: "AI service failure" });
+for await (const chunk of stream) {
+const token = chunk.choices?.[0]?.delta?.content;
+if (token) {
+res.write(token);
 }
+}
+
+res.end();
+
+catch (error) {
+console.error("Sotou AI API Error:", error);
+res.write("\n[Error: AI service failure]");
+res.end();
 }
 
 
