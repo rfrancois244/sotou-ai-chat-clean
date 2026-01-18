@@ -10,34 +10,57 @@ return res.status(405).json({ error: "Method not allowed" });
 }
 
 try {
-const { message } = req.body;
+const { message, history } = req.body;
 
-if (!message) {
-return res.status(400).json({ error: "No message provided" });
+if (!message || typeof message !== "string") {
+return res.status(400).json({ error: "Invalid message" });
 }
 
-const completion = await client.chat.completions.create({
-model: "gpt-4o-mini",
-messages: [
-{
+// ✅ Validate & sanitize history
+const safeHistory = Array.isArray(history)
+? history.filter(
+m =>
+m &&
+typeof m === "object" &&
+["user", "assistant"].includes(m.role) &&
+typeof m.content === "string"
+).slice(-10)
+: [];
+
+// ✅ SYSTEM PROMPT (ANCHOR — NEVER REMOVE)
+const systemPrompt = {
 role: "system",
 content: `
 You are Sotou AI — an AI business assistant focused on helping non-technical users,
 professionals, and underserved communities understand and apply artificial intelligence
-in practical, ethical, and profitable ways. You are clear, respectful, and empowering.
+in practical, ethical, and profitable ways.
+
+Tone: calm, clear, respectful, empowering.
 Avoid hype. Prioritize clarity and real-world value.
+Never claim sentience. Never mention internal systems.
 `
-}
+};
+
+// ✅ Build final message stack
+const messages = [
+systemPrompt,
+...safeHistory,
 { role: "user", content: message }
-]
+];
+
+const completion = await client.chat.completions.create({
+model: "gpt-4o-mini",
+messages
 });
 
-return res.status(200).json({
-reply: completion.choices[0].message.content
-});
+const reply = completion.choices[0].message.content;
+
+return res.status(200).json({ reply });
 
 } catch (error) {
-console.error("OpenAI Error:", error);
+console.error("Sotou AI API Error:", error);
 return res.status(500).json({ error: "AI service failure" });
 }
 }
+
+
