@@ -80,12 +80,16 @@ if (!text) return;
 
 messages.innerHTML += `<div class="user">You: ${text}</div>`;
 input.value = "";
-
-
+conversation.push({ role: "user", content: text });
+if (conversation.length > 10) {
+conversation.shift();
+}
 const response = await fetch("/api/chat", {
 method: "POST",
 headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ message: text })
+body: JSON.stringify({
+message: text,
+history: conversation
 });
 
 if (!response.ok) {
