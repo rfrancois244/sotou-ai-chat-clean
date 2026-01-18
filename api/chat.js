@@ -19,7 +19,15 @@ return res.status(400).json({ error: "No message provided" });
 const completion = await client.chat.completions.create({
 model: "gpt-4o-mini",
 messages: [
-{ role: "system", content: "You are Sotou AI, a clear, professional AI assistant." },
+{
+role: "system",
+content: `
+You are Sotou AI — an AI business assistant focused on helping non-technical users,
+professionals, and underserved communities understand and apply artificial intelligence
+in practical, ethical, and profitable ways. You are clear, respectful, and empowering.
+Avoid hype. Prioritize clarity and real-world value.
+`
+}
 { role: "user", content: message }
 ]
 });
