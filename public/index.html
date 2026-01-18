@@ -71,7 +71,8 @@ border-radius: 4px;
 </div>
 
 <script>
-async function sendMessage() {
+const conversation = [];
+  async function sendMessage() {
 const input = document.getElementById("input");
 const messages = document.getElementById("messages");
 const text = input.value;
