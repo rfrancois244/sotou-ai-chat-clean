@@ -80,16 +80,24 @@ if (!text) return;
 messages.innerHTML += `<div class="user">You: ${text}</div>`;
 input.value = "";
 
-const response = await fetch("/chat", {
+
+const response = await fetch("/api/chat", {
 method: "POST",
 headers: { "Content-Type": "application/json" },
 body: JSON.stringify({ message: text })
 });
 
+if (!response.ok) {
+const errText = await response.text();
+messages.innerHTML += `<div class="bot">Sotou AI: Server error (${response.status})</div>`;
+messages.scrollTop = messages.scrollHeight;
+return;
+}
+
+
 const data = await response.json();
 messages.innerHTML += `<div class="bot">Sotou AI: ${data.reply}</div>`;
 messages.scrollTop = messages.scrollHeight;
-}
 </script>
 </body>
 </html>
